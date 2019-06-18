@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Modelo.Domain.Entities;
 using Modelo.Domain.Interfaces;
-using Modelo.Service.Services;
-using Modelo.Service.Validators;
+using Modelo.UserServive.Services;
+using Modelo.UserServive.Validators;
 using System;
 using System.Linq;
 
@@ -30,7 +30,7 @@ namespace Modelo.Application.Controllers
             if (userDb == null)
                 return NotFound();
 
-            return new ObjectResult(AuthorizationService.GenerateToken(userDb.Email, Environment.GetEnvironmentVariable("SecretKey")));
+            return new OkObjectResult(AuthorizationService.GenerateToken(userDb.Email, Environment.GetEnvironmentVariable("SecretKey")));
         }
 
 
@@ -50,10 +50,6 @@ namespace Modelo.Application.Controllers
                 _service.Insert<UserValidator>(user);
 
                 return new OkObjectResult(user.Id);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return NotFound(ex);
             }
             catch (Exception ex)
             {
@@ -80,10 +76,6 @@ namespace Modelo.Application.Controllers
                 _service.Update<UserValidator>(old);
 
                 return new ObjectResult(item);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return NotFound(ex);
             }
             catch (Exception ex)
             {

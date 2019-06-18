@@ -2,7 +2,7 @@
 using Modelo.Domain.Entities;
 using System;
 
-namespace Modelo.Service.Validators
+namespace Modelo.UserServive.Validators
 {
     public class UserValidator : AbstractValidator<UserEntity>
     {

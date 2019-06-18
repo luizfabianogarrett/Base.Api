@@ -9,7 +9,7 @@ using Modelo.Domain.Entities;
 using Modelo.Domain.Interfaces;
 using Modelo.Infra.Data.Context;
 using Modelo.Infra.Data.Repository;
-using Modelo.Service.Services;
+using Modelo.UserServive.Services;
 using System;
 using System.Text;
 

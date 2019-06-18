@@ -16,6 +16,7 @@ namespace Modelo.Infra.Data.Repository
 
         public void Insert(T obj)
         {
+            obj.Id = 0;
             context.Set<T>().Add(obj);
             context.SaveChanges();
         }

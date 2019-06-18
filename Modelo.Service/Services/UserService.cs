@@ -4,7 +4,7 @@ using Modelo.Domain.Interfaces;
 using System;
 using System.Linq;
 
-namespace Modelo.Service.Services
+namespace Modelo.UserServive.Services
 {
     public class UserService<T> : IService<T> where T : BaseEntity
     {

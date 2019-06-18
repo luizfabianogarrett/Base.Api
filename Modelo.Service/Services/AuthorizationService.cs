@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Modelo.Service.Services
+namespace Modelo.UserServive.Services
 {
     public class AuthorizationService
     {
