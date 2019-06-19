@@ -1,51 +1,59 @@
 ﻿using FluentValidation;
 using Modelo.Domain.Entities;
 using Modelo.Domain.Interfaces;
+using Modelo.UserServive.Validators;
 using System;
 using System.Linq;
 
 namespace Modelo.UserServive.Services
 {
-    public class UserService<T> : IService<T> where T : BaseEntity
+    public class UserService<T> : IUserService<T> where T : BaseEntity
     {
-        private IRepository<T> _repository;
 
-        public UserService(IRepository<T> repository)
+        IService<UserEntity> _base;
+
+        public UserService(IService<UserEntity> baseService)
         {
-            _repository = repository;
-        }
-
-        public T Insert<V>(T obj) where V : AbstractValidator<T>
-        {
-            Validate(obj, Activator.CreateInstance<V>());
-            
-            _repository.Insert(obj);
-            return obj;
-        }
-
-        public T Update<V>(T obj) where V : AbstractValidator<T>
-        {
-            Validate(obj, Activator.CreateInstance<V>());
-
-            _repository.Update(obj);
-            return obj;
+            _base = baseService;
         }
 
         public void Delete(int id)
         {
-           _repository.Delete(id);
+            _base.Delete(id);
         }
 
-        public IQueryable<T> Get() => _repository.Select();
-
-        public T Get(int id)
+        public UserEntity Get(int id)
         {
-            return _repository.Select(id);
+            return _base.Get(id);
         }
 
-        private void Validate(T obj, AbstractValidator<T> validator)
+        public IQueryable<UserEntity> Get()
         {
-            validator.ValidateAndThrow(obj);
+            return _base.Get();
+        }
+
+        public UserEntity Insert<V>(UserEntity obj) where V : AbstractValidator<T>
+        {
+            return _base.Insert<UserValidator>(obj);
+        }
+
+        public UserEntity Register(UserEntity user)
+        {
+            var userDb = _base.Get().FirstOrDefault(s => s.Email == user.Email);
+
+            if (userDb != null)
+                throw new Exception("Not found");
+
+            user.Password = AuthorizationService.GenerateHashMd5(user.Password, Environment.GetEnvironmentVariable("SecretKey"));
+
+            _base.Insert<UserValidator>(user);
+
+            return user;
+        }
+
+        public UserEntity Update<V>(UserEntity obj) where V : AbstractValidator<T>
+        {
+            return _base.Update<UserValidator>(obj);
         }
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Modelo.Application</name>
+    </assembly>
+    <members>
+        <member name="M:Modelo.Application.Controllers.UserController.Get(System.Int32)">
+            <summary>
+            Retorna um usuário
+            </summary>
+            <param id="id">Id do Usuário</param>
+            <returns>Objeto contendo dados do´usuário</returns>
+        </member>
+    </members>
+</doc>

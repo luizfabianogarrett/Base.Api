@@ -4,13 +4,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Modelo.Domain.Entities;
 using Modelo.Domain.Interfaces;
 using Modelo.Infra.Data.Context;
 using Modelo.Infra.Data.Repository;
 using Modelo.UserServive.Services;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.IO;
 using System.Text;
 
 namespace Modelo.Application
@@ -31,7 +34,9 @@ namespace Modelo.Application
             services.AddMvc();
 
             services.AddScoped<IRepository<UserEntity>, BaseRepository<UserEntity>>();
-            services.AddScoped<IService<UserEntity>, UserService<UserEntity>>();
+
+            services.AddScoped<IService<UserEntity>, BaseService<UserEntity>>();
+            services.AddScoped<IUserService<UserEntity>, UserService<UserEntity>>();
 
             services.AddScoped<DbContext, MemoryContext>();
             services.AddDbContext<MemoryContext>(opt => opt.UseInMemoryDatabase("DataUserMemory"));
@@ -54,6 +59,17 @@ namespace Modelo.Application
                     ValidateAudience = false
                 };
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "User API", Version = "v1" });
+
+                string pathApp = PlatformServices.Default.Application.ApplicationBasePath;
+                string nameApp = PlatformServices.Default.Application.ApplicationName;
+                string pathXmlDoc = Path.Combine(pathApp, $"{nameApp}.xml");
+
+                c.IncludeXmlComments(pathXmlDoc);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -68,6 +84,14 @@ namespace Modelo.Application
             app.UseAuthentication();
 
             app.UseMvc();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "User API V1");
+                c.RoutePrefix = string.Empty;
+            });
         }
     }
 }

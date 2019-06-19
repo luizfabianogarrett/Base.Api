@@ -14,9 +14,9 @@ namespace Modelo.Application.Controllers
     [Route("api/user")]
     public class UserController : Controller
     {
-        private IService<UserEntity> _service;
+        private IUserService<UserEntity> _service;
 
-        public UserController(IService<UserEntity> service)
+        public UserController(IUserService<UserEntity> service)
         {
             _service = service;
         }
@@ -40,14 +40,8 @@ namespace Modelo.Application.Controllers
         {
             try
             {
-                var userDb = _service.Get().FirstOrDefault(s => s.Email == user.Email);
 
-                if (userDb != null)
-                    return BadRequest();
-
-                user.Password = AuthorizationService.GenerateHashMd5(user.Password, Environment.GetEnvironmentVariable("SecretKey"));
-
-                _service.Insert<UserValidator>(user);
+                _service.Register(user);
 
                 return new OkObjectResult(user.Id);
             }
@@ -57,7 +51,6 @@ namespace Modelo.Application.Controllers
             }
         }
 
-        [HttpPut]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UserEntity item)
         {
@@ -115,6 +108,11 @@ namespace Modelo.Application.Controllers
             }
         }
 
+        /// <summary>
+        /// Retorna um usuário
+        /// </summary>
+        /// <param id="id">Id do Usuário</param>
+        /// <returns>Objeto contendo dados do´usuário</returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {

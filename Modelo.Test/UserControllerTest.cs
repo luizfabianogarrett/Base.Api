@@ -15,7 +15,8 @@ namespace Modelo.Test
     public class UserControllerTest : IDisposable
     {
         private IRepository<UserEntity> _repository;
-        private IService<UserEntity> _serviceUser;
+        private IUserService<UserEntity> _serviceUser;
+        private IService<UserEntity> _serviceBase;
         private UserController _controller;
         private DbContext _context;
 
@@ -23,7 +24,8 @@ namespace Modelo.Test
         {
             _context = new MemoryContext(new DbContextOptionsBuilder<MemoryContext>().UseInMemoryDatabase("DataUserMemoryTest").Options);
             _repository = new BaseRepository<UserEntity>(_context);
-            _serviceUser = new UserService<UserEntity>(_repository);
+            _serviceBase = new BaseService<UserEntity>(_repository);
+            _serviceUser = new UserService<UserEntity>(_serviceBase);
             _controller = new UserController(_serviceUser);
             Environment.SetEnvironmentVariable("SecretKey", AuthorizationService.GenerateKey());
         }
