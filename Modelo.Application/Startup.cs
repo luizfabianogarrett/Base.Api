@@ -1,18 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Modelo.Domain.Entities;
 using Modelo.Domain.Interfaces;
+using Modelo.Domain.Models;
 using Modelo.Infra.Data.Context;
 using Modelo.Infra.Data.Repository;
 using Modelo.UserServive.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -29,7 +33,10 @@ namespace Modelo.Application
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Environment.SetEnvironmentVariable("SecretKey", AuthorizationService.GenerateKey());
+            var settings = new AppSettings();
+            new ConfigureFromConfigurationOptions<AppSettings>(Configuration.GetSection("AppSettings")).Configure(settings);
+
+            Environment.SetEnvironmentVariable("SecretKey", settings.Salt);
 
             services.AddMvc();
 
@@ -91,6 +98,14 @@ namespace Modelo.Application
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "User API V1");
                 c.RoutePrefix = string.Empty;
+            });
+
+            var supportedCultures = new[] { new CultureInfo("pt-BR") };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(culture: "pt-BR", uiCulture: "pt-BR"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
             });
         }
     }
